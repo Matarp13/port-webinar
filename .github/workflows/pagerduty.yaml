@@ -1,0 +1,20 @@
+name: PagerDuty Exporter Workflow
+
+# This workflow responsible for running PagerDuty exporter.
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run-integration:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: port-labs/ocean-sail@v1
+        with:
+          type: 'pagerduty'
+          port_client_id: ${{ secrets.OCEAN__PORT__CLIENT_ID }}
+          port_client_secret: ${{ secrets.OCEAN__PORT__CLIENT_SECRET }}
+          config: |
+            token: ${{ secrets.OCEAN__INTEGRATION__CONFIG__TOKEN }} 
+            api_url: ${{ secrets.OCEAN__INTEGRATION__CONFIG__API_URL }} 
