@@ -1,0 +1,5 @@
+identifier: port-webinar
+title: Port Webinar
+blueprint: service
+properties:
+  slack: https://slack.com  
