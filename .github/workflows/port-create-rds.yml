@@ -15,11 +15,11 @@ on:
       version:
         description: DB Version
         required: true
-        type: string
+        type: number
       region:
         description: DB Version
         required: true
-        type: number
+        type: string
       port_payload:
         required: true
         type: string
