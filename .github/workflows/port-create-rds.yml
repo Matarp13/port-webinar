@@ -19,7 +19,7 @@ on:
       region:
         description: DB Version
         required: true
-        type: string
+        type: number
       port_payload:
         required: true
         type: string
