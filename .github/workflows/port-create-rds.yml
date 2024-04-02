@@ -1,0 +1,74 @@
+name: Provision AN EC2 Instance
+
+on:
+  workflow_dispatch:
+    inputs:
+      rds_cluster_name:
+        description: EC2 name
+        required: true
+        default: 'App Server'
+        type: string
+      database_type:
+        description: Database type
+        required: false
+        type: string
+      version:
+        description: DB Version
+        required: true
+        type: string
+      port_payload:
+        required: true
+        type: string
+jobs:
+  provision-ec2:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '14'
+
+      - name: Log starting of RDS Cluster creation 
+        uses: port-labs/port-github-action@v1
+        with:
+          clientId: ${{ secrets.PORT_CLIENT_ID }}
+          clientSecret: ${{ secrets.PORT_CLIENT_SECRET }}
+          operation: PATCH_RUN
+          runId: ${{ fromJson(inputs.port_payload).context.runId }}
+          logMessage: |
+              About to create a new RDS cluster ${{ github.event.inputs.rds_cluster_name }} .. ⛴️
+
+      - name: UPSERT Entity
+        uses: port-labs/port-github-action@v1
+        with:
+          identifier: ${{ github.event.inputs.rds_cluster_name }}
+          title: ${{ github.event.inputs.rds_cluster_name }}
+          blueprint: rds_db_instance
+          properties: |-
+            {
+              "arn": "arn:aws:rds:${{ github.event.inputs.region }}:123456789012:cluster:${{ github.event.inputs.rds_cluster_name }}",
+              "engine": "${{ github.event.inputs.database_type }}",
+              "engine_version":  "${{ github.event.inputs.database_type }}",
+              "link": "https://console.aws.amazon.com/go/view?arn=arn:aws:rds:${{ github.event.inputs.region }}:533267203958:${{ github.event.inputs.rds_cluster_name }}"
+              "multiAz": "${{ fromJson(steps.datadog_incident.outputs.response).data.attributes.created_by.data.attributes.name }}",
+              "tags": []
+            }
+          relations: |-
+            { 
+              "region": "${{ github.event.inputs.region }}"
+            }
+          clientId: ${{ secrets.PORT_CLIENT_ID }}
+          clientSecret: ${{ secrets.PORT_CLIENT_SECRET }}
+          baseUrl: https://api.getport.io
+          operation: UPSERT
+          runId: ${{fromJson(inputs.port_payload).context.runId}}
+          
+      - name: Create a log message
+        uses: port-labs/port-github-action@v1
+        with:
+          clientId: ${{ secrets.PORT_CLIENT_ID }}
+          clientSecret: ${{ secrets.PORT_CLIENT_SECRET }}
+          operation: PATCH_RUN
+          runId: ${{ fromJson(inputs.port_payload).context.runId }}
+          logMessage: |
+              RDS cluster created successfully ✅
