@@ -16,6 +16,10 @@ on:
         description: DB Version
         required: true
         type: string
+      region:
+        description: DB Version
+        required: true
+        type: string
       port_payload:
         required: true
         type: string
