@@ -58,7 +58,7 @@ jobs:
             {
               "arn": "arn:aws:rds:${{ github.event.inputs.region }}:123456789012:cluster:${{ github.event.inputs.rds_cluster_name }}",
               "engine": "${{ github.event.inputs.database_type }}",
-              "engine_version":  ${{ github.event.inputs.database_type }},
+              "engine_version":  ${{ github.event.inputs.version }},
               "link": "https://console.aws.amazon.com/go/view?arn=arn:aws:rds:${{ github.event.inputs.region }}:533267203958:${{ github.event.inputs.rds_cluster_name }}",
               "multiAz": "true",
               "tags": []
