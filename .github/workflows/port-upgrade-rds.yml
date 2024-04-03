@@ -1,4 +1,4 @@
-name: Provision AN EC2 Instance
+name: Upgrade AN EC2 Instance
 
 on:
   workflow_dispatch:
@@ -70,9 +70,6 @@ jobs:
           properties: |-
             {
               "engine_version":  16.1,
-            }
-          relations: |-
-            { 
             }
           clientId: ${{ secrets.PORT_CLIENT_ID }}
           clientSecret: ${{ secrets.PORT_CLIENT_SECRET }}
