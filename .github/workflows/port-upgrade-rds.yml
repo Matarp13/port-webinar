@@ -73,7 +73,7 @@ jobs:
       - name: UPSERT Entity
         uses: port-labs/port-github-action@v1
         with:
-          identifier: ${{ github.event.inputs.rds_cluster_name }}
+          identifier: ${{ fromJson(inputs.port_payload).context.entity }}
           blueprint: rds_db_instance
           properties: |-
             {
