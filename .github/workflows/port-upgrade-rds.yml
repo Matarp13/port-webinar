@@ -1,0 +1,108 @@
+name: Provision AN EC2 Instance
+
+on:
+  workflow_dispatch:
+    inputs:
+      rds_cluster_name:
+        description: EC2 name
+        required: true
+        default: 'App Server'
+        type: string
+      database_type:
+        description: Database type
+        required: false
+        type: string
+      version:
+        description: DB Version
+        required: true
+        type: number
+      region:
+        description: DB Version
+        required: true
+        type: string
+      port_payload:
+        required: true
+        type: string
+    secrets:
+      PORT_CLIENT_ID:
+        required: true
+      PORT_CLIENT_SECRET:
+        required: true
+        
+jobs:
+  provision-ec2:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '14'
+
+      - name: Log starting of RDS Cluster creation 
+        uses: port-labs/port-github-action@v1
+        with:
+          clientId: ${{ secrets.PORT_CLIENT_ID }}
+          clientSecret: ${{ secrets.PORT_CLIENT_SECRET }}
+          operation: PATCH_RUN
+          runId: ${{ fromJson(inputs.port_payload).context.runId }}
+          logMessage: |
+              Preparing to perform an upgrade of the ${{ fromJson(inputs.port_payload).context.entity }} RDS cluster .. ⛴️
+
+      - name: Logs starting backup
+        uses: port-labs/port-github-action@v1
+        with:
+          clientId: ${{ secrets.PORT_CLIENT_ID }}
+          clientSecret: ${{ secrets.PORT_CLIENT_SECRET }}
+          operation: PATCH_RUN
+          runId: ${{ fromJson(inputs.port_payload).context.runId }}
+          logMessage: |
+              Backing up cluster.. 🏗
+
+      - name: Logs starting pre process
+        uses: port-labs/port-github-action@v1
+        with:
+          clientId: ${{ secrets.PORT_CLIENT_ID }}
+          clientSecret: ${{ secrets.PORT_CLIENT_SECRET }}
+          operation: PATCH_RUN
+          runId: ${{ fromJson(inputs.port_payload).context.runId }}
+          logMessage: |
+               Snapshot of 'prod-cluster' initiated before upgrade
+               Pre-upgrade checks completed successfully. No issues found ✅
+               
+      - name: Logs upgrade in progress
+        uses: port-labs/port-github-action@v1
+        with:
+          clientId: ${{ secrets.PORT_CLIENT_ID }}
+          clientSecret: ${{ secrets.PORT_CLIENT_SECRET }}
+          operation: PATCH_RUN
+          runId: ${{ fromJson(inputs.port_payload).context.runId }}
+          logMessage: |
+              Upgrade of RDS cluster 'prod-cluster' to version 16 is in progress..
+
+      - name: UPSERT Entity
+        uses: port-labs/port-github-action@v1
+        with:
+          identifier: ${{ github.event.inputs.rds_cluster_name }}
+          blueprint: rds_db_instance
+          properties: |-
+            {
+              "engine_version":  16.1,
+            }
+          relations: |-
+            { 
+            }
+          clientId: ${{ secrets.PORT_CLIENT_ID }}
+          clientSecret: ${{ secrets.PORT_CLIENT_SECRET }}
+          baseUrl: https://api.getport.io
+          operation: UPSERT
+          runId: ${{fromJson(inputs.port_payload).context.runId}}
+          
+      - name: Create a log message
+        uses: port-labs/port-github-action@v1
+        with:
+          clientId: ${{ secrets.PORT_CLIENT_ID }}
+          clientSecret: ${{ secrets.PORT_CLIENT_SECRET }}
+          operation: PATCH_RUN
+          runId: ${{ fromJson(inputs.port_payload).context.runId }}
+          logMessage: |
+              Database version upgrade completed successfully! ✅
