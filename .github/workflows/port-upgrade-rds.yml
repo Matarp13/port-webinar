@@ -3,23 +3,6 @@ name: Provision AN EC2 Instance
 on:
   workflow_dispatch:
     inputs:
-      rds_cluster_name:
-        description: EC2 name
-        required: true
-        default: 'App Server'
-        type: string
-      database_type:
-        description: Database type
-        required: false
-        type: string
-      version:
-        description: DB Version
-        required: true
-        type: number
-      region:
-        description: DB Version
-        required: true
-        type: string
       port_payload:
         required: true
         type: string
