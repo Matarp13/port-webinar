@@ -1,4 +1,4 @@
-name: Upgrade AN EC2 Instance
+name: Upgrade AN RDS Cluster
 
 on:
   workflow_dispatch:
