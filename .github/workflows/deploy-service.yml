@@ -18,19 +18,26 @@ jobs:
           identifier: playground
           blueprint: service
           operation: GET
+
   check-lock-status:
     runs-on: ubuntu-latest
     needs: get-entity
     steps:
+      - name: Debug entity output
+        run: echo '${{needs.get-entity.outputs.entity}}'
       - name: Get entity lock status
-        run: echo "LOCK_STATUS=$(echo '${{needs.get-entity.outputs.entity}}' | jq -r .scorecards.documentation.rules[0].status)" >> $GITHUB_ENV
+        run: |
+          LOCK_STATUS=$(echo '${{needs.get-entity.outputs.entity}}' | jq -r .scorecards.documentation.rules[0].status)
+          echo "LOCK_STATUS=${LOCK_STATUS}" >> $GITHUB_ENV
+          IDENTIFIER=$(echo '${{needs.get-entity.outputs.entity}}' | jq -r .scorecards.documentation.rules[0].identifier)
+          echo "REQUIREMENT=${IDENTIFIER}" >> $GITHUB_ENV
       - name: Check lock status 🚧
         if: ${{ env.LOCK_STATUS == 'FAILURE' }}
         run: |
-          echo "Service in production is locked due to an unmet requirement - ${{needs.get-entity.outputs.entity.scorecards.documentation.rules[0].identifier}}"
+          echo "Service in production is locked due to an unmet requirement - ${REQUIREMENT}"
           echo "Stopping service deployment 🛑 "
-
           exit 1
+
   run-deployment:
     runs-on: ubuntu-latest
     needs: [check-lock-status]
