@@ -27,7 +27,7 @@ jobs:
       - name: Check lock status 🚧
         if: ${{ env.LOCK_STATUS == 'FAILURE' }}
         run: |
-          echo "Service in production is locked due to an unmet requirement - ${{needs.get-entity.outputs.entity.scorecards.documentation.rules[0].title}}"
+          echo "Service in production is locked due to an unmet requirement - ${{needs.get-entity.outputs.entity.scorecards.documentation.rules[0].identifier}}"
           echo "Stopping service deployment 🛑 "
 
           exit 1
