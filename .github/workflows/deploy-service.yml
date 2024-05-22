@@ -1,4 +1,4 @@
-name: Check Service Lock Status
+name: Deploy a Service to Production
 on:
   push:
     branches:
