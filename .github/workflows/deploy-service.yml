@@ -15,7 +15,7 @@ jobs:
         with:
           clientId: ${{ secrets.PORT_CLIENT_ID }}
           clientSecret: ${{ secrets.PORT_CLIENT_SECRET }}
-          identifier: notification-service
+          identifier: playground
           blueprint: service
           operation: GET
   check-lock-status:
@@ -23,9 +23,9 @@ jobs:
     needs: get-entity
     steps:
       - name: Get entity lock status
-        run: echo "LOCK_STATUS=$(echo '${{needs.get-entity.outputs.entity}}' | jq -r .properties.locked_in_prod)" >> $GITHUB_ENV
+        run: echo "LOCK_STATUS=$(echo '${{needs.get-entity.outputs.entity}}' | jq -r .scorecards.documentation.rules[0].status)" >> $GITHUB_ENV
       - name: Check lock status 🚧
-        if: ${{ env.LOCK_STATUS == 'true' }}
+        if: ${{ env.LOCK_STATUS == 'FAILURE' }}
         run: |
           echo "Service in production is locked, stopping deployment"
           exit 1
