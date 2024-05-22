@@ -1,8 +1,7 @@
 name: Deploy a Service to Production
 on:
-  push:
-    branches:
-      - "main"
+  workflow_dispatch:
+  
 jobs:
   get-entity:
     runs-on: ubuntu-latest
