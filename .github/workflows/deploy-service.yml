@@ -22,15 +22,13 @@ jobs:
     runs-on: ubuntu-latest
     needs: get-entity
     steps:
-      - name: Debug entity output
-        run: echo '${{needs.get-entity.outputs.entity}}'
-      - name: Get entity lock status
+      - name: Get entity scorecards
         run: |
           LOCK_STATUS=$(echo '${{needs.get-entity.outputs.entity}}' | jq -r .scorecards.documentation.rules[0].status)
           echo "LOCK_STATUS=${LOCK_STATUS}" >> $GITHUB_ENV
           IDENTIFIER=$(echo '${{needs.get-entity.outputs.entity}}' | jq -r .scorecards.documentation.rules[0].identifier)
           echo "REQUIREMENT=${IDENTIFIER}" >> $GITHUB_ENV
-      - name: Check lock status 🚧
+      - name: Check scorecards status 🚦
         if: ${{ env.LOCK_STATUS == 'FAILURE' }}
         run: |
           echo "Service in production is locked due to an unmet requirement - ${REQUIREMENT}"
