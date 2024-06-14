@@ -1,0 +1,19 @@
+name: LaunchDarkly Exporter Workflow
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run-integration:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: port-labs/ocean-sail@v1
+        with: 
+          type: "launchdarkly"
+          port_client_id: ${{ secrets.OCEAN__PORT__CLIENT_ID }}
+          port_client_secret: ${{ secrets.OCEAN__PORT__CLIENT_SECRET }}
+          port_base_url: https://api.getport.io
+          config: |
+            launchdarkly_host: ${{ secrets.OCEAN__INTEGRATION__CONFIG__LAUNCHDARKLY_HOST }}
+            launchdarkly_token: ${{ secrets.OCEAN__INTEGRATION__CONFIG__LAUNCHDARKLY_TOKEN }}
