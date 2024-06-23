@@ -88,7 +88,7 @@ jobs:
               "language": "${{ github.event.inputs.language }}",
               "deployed_on": "${{ github.event.inputs.deploy_on }}",
               "engine_version": "${{ github.event.inputs.version }}",
-              "link": "https://github.com/Matarp13/${{ github.event.inputs.service_name }}",
+              "url": "https://github.com/Matarp13/${{ github.event.inputs.service_name }}",
               "slack": "https://slack.com/${{ github.event.inputs.service_name }}",
               "readme": "# ${{ github.event.inputs.service_name }} Service\n\n## Overview\n\nThe ${{ github.event.inputs.service_name }} Service handles ${{ github.event.inputs.service_name }} processing and management. It provides endpoints for creating, updating, and tracking ${{ github.event.inputs.service_name }}s.\n\n## Features\n\n- Process and manage ${{ github.event.inputs.service_name }}s\n- Create and update ${{ github.event.inputs.service_name }}s\n- Track ${{ github.event.inputs.service_name }} status",
               "tier": "Customer Facing",
