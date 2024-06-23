@@ -15,7 +15,7 @@ jobs:
                 port_client_secret: ${{ secrets.PORT_CLIENT_SECRET }}
                 blueprint: service
                 scorecard: security
-                filter_rule: ''
+                filter_rule: '{}'
                 jira_api_endpoint: https://getport.atlassian.net/
                 jira_email: ${{ secrets.OCEAN__INTEGRATION__CONFIG__ATLASSIAN_USER_EMAIL }}
                 jira_project_id: DEMO
