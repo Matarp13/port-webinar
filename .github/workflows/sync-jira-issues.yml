@@ -17,7 +17,7 @@ jobs:
                 scorecard: security
                 filter_rule: '{}'
                 jira_api_endpoint: https://getport.atlassian.net/
-                jira_email: matar@getport.io
+                jira_email: ${{ secrets.OCEAN__INTEGRATION__CONFIG__ATLASSIAN_USER_EMAIL }}
                 jira_project_id: DEMO
-                jira_token: ${{ secrets.JIRA_TOKEN }}
+                jira_token: ${{ secrets.OCEAN__INTEGRATION__CONFIG__ATLASSIAN_USER_TOKEN }}
                 target_kind: jira
