@@ -1,0 +1,301 @@
+name: Scaffold a new appliction
+
+on:
+  workflow_dispatch:
+    inputs:
+      service_name:
+        description: Service name
+        required: true
+        type: string
+      deploy_on:
+        description: Deployment type
+        required: false
+        type: string
+      owning_team:
+        description: The team to own the service 
+        required: true
+        type: number
+      language:
+        description: Language for the service to be created
+        required: true
+        type: string
+      port_payload:
+        required: true
+        type: string
+    secrets:
+      PORT_CLIENT_ID:
+        required: true
+      PORT_CLIENT_SECRET:
+        required: true
+        
+        
+jobs:
+  create-a-new-service:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '14'
+
+      - name: Log starting of application creation 
+        uses: port-labs/port-github-action@v1
+        with:
+          clientId: ${{ secrets.PORT_CLIENT_ID }}
+          clientSecret: ${{ secrets.PORT_CLIENT_SECRET }}
+          operation: PATCH_RUN
+          runId: ${{ fromJson(inputs.port_payload).context.runId }}
+          logMessage: |
+              Created a new repository for the ${{inputs.service_name}} service from ${{inputs.language}} template ✅
+          
+      - name: Log creation of CI/CD
+        uses: port-labs/port-github-action@v1
+         with:
+          clientId: ${{ secrets.PORT_CLIENT_ID }}
+          clientSecret: ${{ secrets.PORT_CLIENT_SECRET }}
+          operation: PATCH_RUN
+          runId: ${{ fromJson(inputs.port_payload).context.runId }}
+          logMessage: |
+              Successfully setup CI/CD for service release process ✅\
+              
+      - name: Connected to security tools
+        uses: port-labs/port-github-action@v1
+         with:
+          clientId: ${{ secrets.PORT_CLIENT_ID }}
+          clientSecret: ${{ secrets.PORT_CLIENT_SECRET }}
+          operation: PATCH_RUN
+          runId: ${{ fromJson(inputs.port_payload).context.runId }}
+          logMessage: |
+              Successfully connected security tool to application ✅
+
+      - name: UPSERT Entity
+        uses: port-labs/port-github-action@v1
+        with:
+          identifier: ${{ github.event.inputs.service_name }}-service
+          title: ${{ github.event.inputs.service_name }}
+          blueprint: service
+          properties: |-
+            {
+              "language": "${{github.event.inputs.language}}",
+              "deployed_on": "${{ github.event.inputs.deploy_on }}",
+              "engine_version":  ${{ github.event.inputs.version }},
+              "link": "https://github.com/Matarp13/${{ github.event.inputs.service_name }}",
+              "slack": "https://slack.com/${{ github.event.inputs.service_name}}",
+              "api_spec": {
+      "info": {
+        "title": "${{github.event.inputs.service_name}} Microservice",
+        "version": "1.0.0",
+        "description": "API for managing ${{github.event.inputs.service_name}}s"
+      },
+      "paths": {
+        "/${{github.event.inputs.service_name}}s": {
+          "get": {
+            "summary": "Get all ${{github.event.inputs.service_name}}s",
+            "responses": {
+              "200": {
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/${{github.event.inputs.service_name}}"
+                      }
+                    }
+                  }
+                },
+                "description": "A list of ${{github.event.inputs.service_name}}s"
+              }
+            },
+            "operationId": "get${{github.event.inputs.service_name}}s"
+          },
+          "post": {
+            "summary": "Create a new ${{github.event.inputs.service_name}}",
+            "responses": {
+              "201": {
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/${{github.event.inputs.service_name}}"
+                    }
+                  }
+                },
+                "description": "${{github.event.inputs.service_name}} created successfully"
+              }
+            },
+            "operationId": "create${{github.event.inputs.service_name}}",
+            "requestBody": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/${{github.event.inputs.service_name}}"
+                  }
+                }
+              },
+              "required": true,
+              "description": "${{github.event.inputs.service_name}} object that needs to be added"
+            }
+          }
+        },
+        "/${{github.event.inputs.service_name}}s/{${{github.event.inputs.service_name}}Id}": {
+          "get": {
+            "summary": "Get ${{github.event.inputs.service_name}} by ID",
+            "responses": {
+              "200": {
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/${{github.event.inputs.service_name}}"
+                    }
+                  }
+                },
+                "description": "${{github.event.inputs.service_name}} details"
+              },
+              "404": {
+                "description": "${{github.event.inputs.service_name}} not found"
+              }
+            },
+            "parameters": [
+              {
+                "in": "path",
+                "name": "${{github.event.inputs.service_name}}Id",
+                "schema": {
+                  "type": "string"
+                },
+                "required": true,
+                "description": "ID of the ${{github.event.inputs.service_name}} to retrieve"
+              }
+            ],
+            "operationId": "get${{github.event.inputs.service_name}}ById"
+          },
+          "put": {
+            "summary": "Update an existing ${{github.event.inputs.service_name}}",
+            "responses": {
+              "200": {
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/${{github.event.inputs.service_name}}"
+                    }
+                  }
+                },
+                "description": "${{github.event.inputs.service_name}} updated successfully"
+              },
+              "404": {
+                "description": "${{github.event.inputs.service_name}} not found"
+              }
+            },
+            "parameters": [
+              {
+                "in": "path",
+                "name": "${{github.event.inputs.service_name}}Id",
+                "schema": {
+                  "type": "string"
+                },
+                "required": true,
+                "description": "ID of the ${{github.event.inputs.service_name}} to update"
+              }
+            ],
+            "operationId": "update${{github.event.inputs.service_name}}",
+            "requestBody": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/${{github.event.inputs.service_name}}"
+                  }
+                }
+              },
+              "required": true,
+              "description": "${{github.event.inputs.service_name}} object with updated information"
+            }
+          },
+          "delete": {
+            "summary": "Delete an ${{github.event.inputs.service_name}}",
+            "responses": {
+              "204": {
+                "description": "${{github.event.inputs.service_name}} deleted successfully"
+              },
+              "404": {
+                "description": "${{github.event.inputs.service_name}} not found"
+              }
+            },
+            "parameters": [
+              {
+                "in": "path",
+                "name": "${{github.event.inputs.service_name}}Id",
+                "schema": {
+                  "type": "string"
+                },
+                "required": true,
+                "description": "ID of the ${{github.event.inputs.service_name}} to delete"
+              }
+            ],
+            "operationId": "delete${{github.event.inputs.service_name}}"
+          }
+        }
+      },
+      "openapi": "3.0.0",
+      "servers": [
+        {
+          "url": "https://api.example.com/v1",
+          "description": "Main (production) server"
+        }
+      ],
+      "components": {
+        "schemas": {
+          "${{github.event.inputs.service_name}}": {
+            "type": "object",
+            "required": [
+              "item",
+              "quantity",
+              "price",
+              "status"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "123"
+              },
+              "item": {
+                "type": "string",
+                "example": "Laptop"
+              },
+              "price": {
+                "type": "number",
+                "format": "float",
+                "example": 999.99
+              },
+              "status": {
+                "type": "string",
+                "example": "Pending"
+              },
+              "quantity": {
+                "type": "integer",
+                "example": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    "readme": "# ${{github.event.inputs.service_name}} Service\n\n## Overview\n\nThe ${{github.event.inputs.service_name}} Service handles ${{github.event.inputs.service_name}} processing and management. It provides endpoints for creating, updating, and tracking ${{github.event.inputs.service_name}}s.\n\n## Features\n\n- Process and manage ${{github.event.inputs.service_name}}s\n- Create and update ${{github.event.inputs.service_name}}s\n- Track ${{github.event.inputs.service_name}} status"
+              
+            }
+          relations: |-
+            { 
+              "region": "${{ github.event.inputs.region }}"
+            }
+          clientId: ${{ secrets.PORT_CLIENT_ID }}
+          clientSecret: ${{ secrets.PORT_CLIENT_SECRET }}
+          baseUrl: https://api.getport.io
+          operation: UPSERT
+          runId: ${{fromJson(inputs.port_payload).context.runId}}
+          
+      - name: Ready to use, good luck
+        uses: port-labs/port-github-action@v1
+         with:
+          clientId: ${{ secrets.PORT_CLIENT_ID }}
+          clientSecret: ${{ secrets.PORT_CLIENT_SECRET }}
+          operation: PATCH_RUN
+          runId: ${{ fromJson(inputs.port_payload).context.runId }}
+          logMessage: |
+              Service is ready for coding, good luck 🚀
