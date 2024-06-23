@@ -81,6 +81,7 @@ jobs:
         with:
           identifier: ${{ github.event.inputs.service_name }}-service
           title: ${{ github.event.inputs.service_name }}
+          team: ${{ github.event.inputs.owning_team }}
           blueprint: service
           properties: |-
             {
