@@ -19,7 +19,16 @@ on:
         description: Language for the service to be created
         required: true
         type: string
-      port_payload:
+      caching_system:
+        description: Language for the service to be created
+        required: true
+        type: string
+      create_database:
+        description: Language for the service to be created
+        required: true
+        type: string
+      
+      port_context:
         required: true
         type: string
     secrets:
@@ -43,7 +52,7 @@ jobs:
           clientId: ${{ secrets.PORT_CLIENT_ID }}
           clientSecret: ${{ secrets.PORT_CLIENT_SECRET }}
           operation: PATCH_RUN
-          runId: ${{ fromJson(inputs.port_payload).context.runId }}
+          runId: ${{ fromJson(inputs.port_context).runId }}
           logMessage: |
               Created a new repository for the ${{ inputs.service_name }} service from ${{ inputs.language }} template ✅
 
@@ -53,7 +62,7 @@ jobs:
           clientId: ${{ secrets.PORT_CLIENT_ID }}
           clientSecret: ${{ secrets.PORT_CLIENT_SECRET }}
           operation: PATCH_RUN
-          runId: ${{ fromJson(inputs.port_payload).context.runId }}
+          runId: ${{ fromJson(inputs.port_context).runId }}
           logMessage: |
               Successfully setup CI/CD for service release process ✅
 
@@ -63,7 +72,7 @@ jobs:
           clientId: ${{ secrets.PORT_CLIENT_ID }}
           clientSecret: ${{ secrets.PORT_CLIENT_SECRET }}
           operation: PATCH_RUN
-          runId: ${{ fromJson(inputs.port_payload).context.runId }}
+          runId: ${{ fromJson(inputs.port_context).runId }}
           logMessage: |
               Successfully connected security tool to application ✅
 
@@ -286,7 +295,7 @@ jobs:
           clientSecret: ${{ secrets.PORT_CLIENT_SECRET }}
           baseUrl: https://api.getport.io
           operation: UPSERT
-          runId: ${{ fromJson(inputs.port_payload).context.runId }}
+          runId: ${{ fromJson(inputs.port_context).runId }}
 
       - name: Ready to use, good luck
         uses: port-labs/port-github-action@v1
@@ -294,6 +303,6 @@ jobs:
           clientId: ${{ secrets.PORT_CLIENT_ID }}
           clientSecret: ${{ secrets.PORT_CLIENT_SECRET }}
           operation: PATCH_RUN
-          runId: ${{ fromJson(inputs.port_payload).context.runId }}
+          runId: ${{ fromJson(inputs.port_context).runId }}
           logMessage: |
               Service is ready for coding, good luck 🚀
